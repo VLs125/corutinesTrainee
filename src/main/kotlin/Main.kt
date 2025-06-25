@@ -35,17 +35,14 @@ fun main() {
                 val posts = getPosts(client)
                     .map { post ->
                         async {
-                            PostWithComments(post, getComments(client, post.id))
+                            PostWithComments(
+                                post,
+                                getComments(client, post.id),
+                                getAuthorForPost(client, post.authorId)
+                            )
                         }
                     }.awaitAll()
                 println(posts)
-                lateinit var postsAuthors: MutableList<Author>
-                posts.forEach {
-                    async {
-                        postsAuthors.add(getAuthorForPost(client, it.post.authorId))
-                    }.await()
-                }
-                println(postsAuthors)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
